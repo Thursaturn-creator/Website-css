@@ -1,0 +1,59 @@
+#include <LiquidCrystal_I2C.h>
+#include <DHT.h>
+#define DHTPIN 8
+#define DHTTYPE DHT22
+DHT dht (DHTPIN, DHTTYPE);
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+#define echoPin 6
+#define trigPin 7
+
+
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  Serial.println("Mengukur Jarak dan Suhu");
+  lcd.begin(16, 2);
+  dht.begin();
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  //jarak
+  long jarak, hitung, duration;
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  hitung = (duration/2) / 28;
+  jarak = 18.5 - hitung;
+
+  //suhu
+  float t = dht.readTemperature();
+  delay(1000);
+
+  //menampilkan jarak dan suhu pada LCD
+  lcd.setCursor(0,0);
+  lcd.println("suhu=");
+  lcd.print(t);
+  lcd.println(" c");
+  lcd.setCursor(0,1);
+  lcd.println("jarak=");
+  lcd.print(jarak);
+  lcd.println(" cm");
+
+  //menampilkan pada serial monitor
+  Serial.println("suhu = ");
+  Serial.print(t);
+  Serial.println(" c");
+  Serial.println("jarak = ");
+  Serial.print(jarak);
+  Serial.println(" cm");
+  
+
+
+}
